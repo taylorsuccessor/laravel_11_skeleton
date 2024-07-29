@@ -1,0 +1,21 @@
+id: 63829
+name: laravel-11-skeleton
+environments:
+    production:
+        memory: 1024
+        cli-memory: 512
+        runtime: 'php-8.3:al2'
+        build:
+            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install --no-dev'
+            - 'php artisan event:cache'
+            - 'npm ci && npm run build && rm -rf node_modules'
+    staging:
+        memory: 1024
+        cli-memory: 512
+        runtime: 'php-8.2:al2'
+        database: laravel-skeleton
+        domain: tech-test.livaatverse.com
+        build:
+            - 'COMPOSER_MIRROR_PATH_REPOS=1 composer install'
+            - 'php artisan event:cache'
+              # - 'npm ci && npm run build && rm -rf node_modules'
