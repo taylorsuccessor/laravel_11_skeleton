@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Description of file.
  *
@@ -14,13 +15,16 @@
  * @link      https://hashim.com
  */
 
- namespace App\Http\Controllers;
+namespace App\Http\Controllers;
 
- use Illuminate\Support\Arr;
- use Illuminate\Foundation\Bus\DispatchesJobs;
- use Illuminate\Routing\Controller as BaseController;
- use Illuminate\Foundation\Validation\ValidatesRequests;
- use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Support\Arr;
+use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Validation\ValidatesRequests;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;
+use GeoIP;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class Controller extends BaseController
 {
@@ -32,6 +36,7 @@ class Controller extends BaseController
      */
     public function authorizedFor($scopes)
     {
+        return true;
 
         if (auth()->user()->is_admin) {
             return true;
@@ -42,5 +47,21 @@ class Controller extends BaseController
         }
 
         abort(403);
+    }
+
+    public function getAuthenticatedUser(Request $request)
+    {
+        try {
+            return $user = JWTAuth::parseToken()->authenticate();
+            return response()->json(['user' => $user]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 401);
+        }
+    }
+
+    public function getUserCountry()
+    {
+        $location = geoip()->getLocation(request()->ip());
+        return $location->country; // Example: "United States"
     }
 }

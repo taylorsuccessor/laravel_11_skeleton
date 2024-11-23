@@ -36,7 +36,6 @@ class BookControllerTest extends TestCase
         $adminRole = Role::where(['name' => 'admin'])->first();
         $user->assignRole($adminRole);
         $this->actingAs($user);
-
     }
 
     #[Test]
@@ -48,30 +47,30 @@ class BookControllerTest extends TestCase
 
         $book = Book::factory()->create(
             [
-            'store_id' => $store->id,
-            'user_id' => $secondUser->id,
-            'name' => 'My first book name',
-            'barcode' => "some-barcode",
-            'pages_number' => 400,
-            'published' => true,
+                'store_id' => $store->id,
+                'user_id' => $secondUser->id,
+                'name' => 'My first book name',
+                'barcode' => "some-barcode",
+                'pages_number' => 400,
+                'published' => true,
             ]
         );
 
         $books = Book::factory()->count(1)->create(
             [
-            'store_id' => $store->id,
-            'user_id' => $user->id,
-            'name' => 'Other My book name',
-            'barcode' => "second-barcode",
-            'pages_number' => 500,
-            'published' => false,
+                'store_id' => $store->id,
+                'user_id' => $user->id,
+                'name' => 'Other My book name',
+                'barcode' => "second-barcode",
+                'pages_number' => 500,
+                'published' => false,
             ]
         );
 
         $this->getJson(route('books.index'))->assertSee(
             [
-            $book->id,
-            ...$books->pluck('id')->toArray()
+                $book->id,
+                ...$books->pluck('id')->toArray()
             ]
         );
 
@@ -91,7 +90,6 @@ class BookControllerTest extends TestCase
             $this->getJson(route('books.index') . '?filter[is_published]=true')
                 ->json('data')
         );
-
     }
 
     #[Test]
@@ -102,8 +100,8 @@ class BookControllerTest extends TestCase
 
         $book = Book::factory()->create(
             [
-            'user_id' => $user->id,
-            'store_id' => $store->id
+                'user_id' => $user->id,
+                'store_id' => $store->id
             ]
         );
 
@@ -121,8 +119,8 @@ class BookControllerTest extends TestCase
 
         $book = Book::factory()->create(
             [
-            'user_id' => $user->id,
-            'store_id' => $store->id
+                'user_id' => $user->id,
+                'store_id' => $store->id
             ]
         );
 
@@ -154,8 +152,8 @@ class BookControllerTest extends TestCase
 
         $book = Book::factory()->create(
             [
-            'user_id' => $user->id,
-            'store_id' => $store->id
+                'user_id' => $user->id,
+                'store_id' => $store->id
             ]
         );
         $response = $this->getJson(route('books.show', ['book' => $book]));
@@ -188,7 +186,8 @@ class BookControllerTest extends TestCase
         $store = Store::factory()->create();
 
         $response = $this->postJson(
-            route('books.create'), [
+            route('books.create'),
+            [
                 'name' => 'my_book_name',
                 'store_id' => $store->id,
                 'user_id' => $user->id,
@@ -224,7 +223,8 @@ class BookControllerTest extends TestCase
         $store = Store::factory()->create();
 
         $response = $this->postJson(
-            route('books.create'), [
+            route('books.create'),
+            [
                 'name' => 'my_book_name',
                 'store_id' => $store->id,
                 'user_id' => $user->id,
@@ -239,20 +239,21 @@ class BookControllerTest extends TestCase
 
         $book = Book::first();
         $this->assertNotNull($book->book_cover_img);
-        Storage::disk('public')->assertExists( $book->book_cover_img);
+        Storage::disk('public')->assertExists($book->book_cover_img);
     }
 
     #[Test]
     public function itValidatesCreateBookFields()
     {
         $response = $this->postJson(
-            route('books.create'), [
-            'name' => 'my_book_name',
-            'store_id' => 1,
-            'user_id' => 33,
-            'barcode' => "",
-            'pages_number' => "12",
-            'published' => true,
+            route('books.create'),
+            [
+                'name' => 'my_book_name',
+                'store_id' => 1,
+                'user_id' => 33,
+                'barcode' => "",
+                'pages_number' => "12",
+                'published' => true,
             ]
         );
         $response->assertStatus(422);
@@ -272,13 +273,14 @@ class BookControllerTest extends TestCase
         $book = Book::factory()->create(['name' => 'Name to update']);
 
         $response = $this->putJson(
-            route('books.update', ['book' => $book]), [
-            'name' => 'my_book_name',
-            'store_id' => $store->id,
-            'user_id' => $user->id,
-            'barcode' => "123",
-            'pages_number' => "12",
-            'published' => true,
+            route('books.update', ['book' => $book]),
+            [
+                'name' => 'my_book_name',
+                'store_id' => $store->id,
+                'user_id' => $user->id,
+                'barcode' => "123",
+                'pages_number' => "12",
+                'published' => true,
             ]
         );
 
@@ -315,8 +317,8 @@ class BookControllerTest extends TestCase
 
         $book = Book::factory()->create(
             [
-            'user_id' => $user->id,
-            'store_id' => $store->id
+                'user_id' => $user->id,
+                'store_id' => $store->id
             ]
         );
 
@@ -331,5 +333,4 @@ class BookControllerTest extends TestCase
 
         $response->assertSuccessful();
     }
-
 }

@@ -4,7 +4,9 @@ namespace App\Models\Store;
 
 use App\Models\AbstractModel;
 use App\Models\User;
+use App\Notifications\NewBookPublished;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Support\Facades\Notification;
 
 /**
  * @property string $name
@@ -20,7 +22,8 @@ class Book extends AbstractModel
         'barcode',
         'pages_number',
         'published',
-        'book_cover_img'
+        'book_cover_img',
+        'publish_at'
     ];
 
     protected $table = 'books';
@@ -52,5 +55,15 @@ class Book extends AbstractModel
     public function scopeIsPublished($query, $isPublished = true)
     {
         return $query->where('published', $isPublished);
+    }
+    protected static function booted()
+    {
+        return response()->json(['message' => 'incorrect_access_data'], 401);
+
+        static::created(function ($book) {
+            // Send notification to all users
+            $users = User::all(); // Get all users
+            Notification::send($users, new NewBookPublished($book)); // Send notification
+        });
     }
 }

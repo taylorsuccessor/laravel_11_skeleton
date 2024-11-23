@@ -35,6 +35,11 @@ class User extends Authenticatable implements JWTSubject
         'remember_token',
     ];
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
     /**
      * Get the attributes that should be cast.
      *

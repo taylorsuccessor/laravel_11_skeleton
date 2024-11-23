@@ -2,6 +2,7 @@
 
 namespace App\Repository\Store;
 
+use App\Jobs\PublishBookJob;
 use App\Repository\AbstractRepository;
 use App\Pay\PendingReviewRecords\PendingReviewRecord;
 use Illuminate\Support\Arr;
@@ -26,6 +27,7 @@ class BookRepository extends AbstractRepository
                 'pages_number' => [Rule::requiredIf(!$book->exists), 'numeric'],
                 'published' => ['sometimes', 'boolean'],
                 'book_cover_img' => ['sometimes', 'image', 'mimes:jpeg,jpg,png', 'max:2048'],
+                'publish_at' => []
             ]
         )->validate();
 
@@ -39,10 +41,16 @@ class BookRepository extends AbstractRepository
      */
     protected function store($book, $data)
     {
-        if (request()->hasFile('book_cover_img')) {
-            $data['book_cover_img'] = request()->file('book_cover_img')->store('book_images', 'public');
-        }
+        // if (request()->hasFile('book_cover_img')) {
+        //     $data['book_cover_img'] = request()->file('book_cover_img')->store('book_images', 'public');
+        // }
         $book->fill(Arr::except($data, []))->save();
+        $delay = now()->diffInSeconds($book->publish_at);
+
+        $delay = 10;
+        // Dispatch the job with a delay
+        PublishBookJob::dispatch($book->id)->delay($delay);
+
 
         return $book;
     }
